@@ -1,69 +1,61 @@
-![](https://raw.githubusercontent.com/GoodManWEN/GoodManWEN.github.io/main/misc/figure.png)
+项目来自：[https://github.com/GoodManWEN/GoodManWEN.github.io](https://github.com/GoodManWEN/GoodManWEN.github.io)
 
-# About GoodManWEN.github.io
+## 快速开始
 
-A website simulating linux system's GUI, using theme of Deepin distro. You can write blogs with markdown and use it to serve your own technical resumes.
-
-#### [中文文档](https://github.com/GoodManWEN/GoodManWEN.github.io/blob/main/misc/readme_chs.md)
-
-## Quick Start
-This project is originally designed to be host on github pages. If this is the way you expect, you follow these steps 
-```
-1. Fork this project.
-2. Goto settings page to link your website to a specified URL.
-3. Start the actions manually (According to github's default policy, actions will not be started 
-   automatically until they are confirmed manually).
-4. Update line 18 of file /.github/workflows/AutoUpdate.yml, connect it to your repo's address.
-```
-After setting up, if your configuration is correct, then the project will run as expected. All of your changes in `/blog` directory will be identically projected onto the linked website (according to your settings).
-
-Nevertheless, some people may want to self-host it (locally), then you should follow these steps:
+在本地运行和调试，请尝试以下步骤:
 ```
 git clone https://github.com/GoodManWEN/GoodManWEN.github.io.git
 cd GoodManWEN.github.io.git
 npm install
 npm run serve
 ```
-At this point you should get the functionality same as a basic blog framework, and if you want to change the blog content to your own, you should modify **you should change the content in the /blog directory**, and then:
+如果你的npm和vue-cli版本合适的话，这样应该足够令程序跑起来，项目使用的版本你可以在下文和`package.json`中找到参考。
+
+如果你希望修改博客内容，那么你应该直接修改`/blog`目录中的内容，该目录中所有.md内容都会被直接映射到网站中。
+
+修改后执行以下命令生成静态文件。
 ```
 python3 generate.py
 npm run build
 ```
-This will convert the pages into static distribution files in `/docs` directory, you can serve them in any web framework.
+由于修改了vue-cli的默认设置，静态文件生成在/docs目录中。
 
-### What's the difference from other comparable programs?
+### 这个项目和同类桌面比有何不同之处？
 
-I happened to write this project because I personally need a project demonstration platform recently, other than comparable programs, I believe this project should have some usefulness in addition to aesthetics. Design-wise, it implements a complete window UI and a basic nested directory functionality. So you can show some folder simulatively as your blog, which accepts markdown files will reduce the cost of migration, and you can resize and stretch the window freely for easy navigation.
+主要集中在本项目实现了更完善的窗口系统，你可以像正常操作系统一样随意创建多个窗口、移动、缩放他们的大小，以及自如管理他们的显式排序关系。实现了一个简易的递归目录系统所以你可以用来将整个文件夹映射出去作为你的博客。另外附赠一个玩具terminal。
 
-### How to update blog contents?
+### 我该如何更新我的博客？
 
-If your project is hosted by **Github Pages**, you can simply modify the contents of the blog directory and then submit a commit. Content will be update automatically by Actions, and then distributed to the website (there may be a delay in updates due to caching policies).
+如果你的博客是fork自本项目并且完全由Github Pages提供服务，那么您徐只要修改/blog目录的内容后提交commit即可，静态文件编译和分发将由Actions自动在后台完成。
 
-### About blog features
+如果你的博客直接fork自本项目，那么你需要检查你的Actions是否全部正确执行。据我所知在fork项目时某些actions会默认关闭自动执行，直到再次手动开启。
 
-To make it easier for you to post your articles as hyperlinks on third-party platforms, you can use the following routing form to allow users to open your specified posts directly with a unique link:
+### 我该如何修改音乐播放器？
+
+这个项目实现了一个简易的音乐播放器，基于`vue-aplayer`，如果你需要修改歌单，请修改`public`目录下的`musics.json`文件，参照指定格式配置即可。由于版权政策，在默认版本里我没有提供音乐的来源地址，你可以自定配置分发策略并在指定位置粘贴音乐的访问链接即可。
+
+按照默认设置，如果你的音乐的封面都来自于自身分发（非第三方分发），那么封面的存放目录是`/public/musiccovers`
+
+### 博客功能的进一步说明
+
+为了实现基础的博客功能，一个典型需求是您希望将文章链接发布在第三方平台，使用户可以通过链接直接定位到您的文章。为了实现该效果，请遵循以下路由规则构建链接
+
 ```
-   https://{{host}}/#/desktop/post/{{article_file_name}}.md
+   https://{{域名}}/#/desktop/post/{{文件名}}.md
 
-   e.g.
+   如：
    https://GoodManWEN.github.io/#/desktop/post/README.md
 ```
 
-Notably that program will recursively look for the first matched file in the file structure, which means that if you have multiple files using the same file name (like README.md) but distributed in different folders, this will only match the first of them. 
+具体逻辑层面，程序将递归搜索并返回**第一个**文件树中文件名与需求值匹配的项。这意味着如果您有多个文件名相同，但分置于不同目录的文件，程序只能返回其中的一个而忽略其他。您无需在意文件名中的空格问题，他们将被自动转义。
 
-If there is no match, then a 404 file will be returned.
+如果没有匹配到结果，将显示一篇404文章。
 
-Regarding the logic to generate title & abstract, the article will be titled with the first recognized `# line` and the first subsequent line without a punctuation mark will be recognized as abstract.
+有关文章识别规则，识别逻辑为，程序将文章的`# 开头行`识别为标题，而其后的非标点符号开头的第一行将被识别为摘要。
 
-### What if I'd like to customize the music module?
+### 借物表
 
-This project has a simple built-in music module built using Aplayer. Considering the copyright policy, you need to set up your music play list yourself. The relevant configuration files are stored in `/public/musics.json`, you need to follow the same format when edit. Generally speaking, you need to focus on the name, the author, the link to the source and the link to the cover of the music.
-
-By default, there's no direct music download links available, and all the album covers are configured in the `/public/musiccovers` directory.
-
-### Packages
-
-This website (source code here) uses these sources:
+这个项目基于以下开源项目:
 ```
 @vue/cli 4.5.11, Blank template with ESLint
 vuetify default settings
@@ -75,41 +67,41 @@ vue-router
 axios & vue-axios
 vue-wechat-title
 ```
-Markdown render is powered by 
+Markdown渲染基于 
 ```
 markdown-it-vue
 ```
-Music player is basic on
+音乐播放器基于
 ```
 vue-aplayer
 ```
-This project is inspired by:
+
+灵感来源于以下项目
 - [https://github.com/vivek9patel/vivek9patel.github.io](https://github.com/vivek9patel/vivek9patel.github.io)
 - [https://codepen.io/Krishna1947/pen/KKgZgLd](https://codepen.io/Krishna1947/pen/KKgZgLd)
-- [https://github.com/puruvj/macos-web](https://github.com/puruvj/macos-web)
-
-### Contributing
-
-Any improvements that wish to improve this site are welcome, you need to contribute to this project by submitting a PR. Since the author himself is not a professional programmer focused on front-end, he is not familiar with the way how front-end tests are deployed, so you shoulddescribe clearly in the PR the reason for your submission, all the places you are modifying, and what we should expect to get out of it.
-
-##### [Guidelines for further development](https://github.com/GoodManWEN/GoodManWEN.github.io/blob/main/misc/Guidelines%20for%20further%20development.md)
 
 
-### Current deficiencies
+### 贡献方式
 
-As mentioned above, since my daily work field is mainly not front-end programming in the past years. As the project is basicly comes from fortuity, I got not many time to finish it other than working hours. The basic coding time is about three days, So this will definitely leave a lot of defects. During the implementation that I realize there are still noticeable differences between the project and the original deepin's UI system, simply put:
-- Fonts, I didn't have time to tune the fonts, which caused them to differ significantly from the originals.
-- Icons, to get the icons quickly, they come from screenshots.
-- Except for some parts, the animations are mainly come from `animate.css`, the performance is different from the original version.
+为了改进本系统而做出的任何形式的贡献都是欢迎的。但是由于作者本身是非专业前端程序员，并不熟悉GUI应该如何部署自动测试，这让开源社区的代码合并产生了一些困难。在没有自动测试的模式下，如果你要提交PR的话，你应该在PR中注明自己修改的原因、修改的所有地方、以及期望看到的效果。
 
-Similarly, this framework does not perform well on mobile platforms. This is partly due to compatibility issues with `animate.css`, and others comes from that many designs are designed for desktop platforms, and I don't know how to arrange them on mobile screens.
+##### [二次开发说明](https://github.com/GoodManWEN/GoodManWEN.github.io/blob/main/misc/Guidelines%20for%20further%20development.md)
 
-## About Deepin
+### 现存的问题
 
-The author of this project has no official relationship with deepin, if you wish to try out the deepin system after viewing this project, please visit [https://www.deepin.org/en/](https://www.deepin.org/en/)
+由于作者本身是大数据专业，属于一个严重跑题的非专业前端开发。并且由于时间有限，实际编码时间大概在三天左右，很多地方的处理是设想在小规模数据量下能良好工作即可，所以以一切从简为原则实现，这必然会带来许多问题。
 
-### Spacial thanks
+目前已知的模仿UI方面与原生界面的不同：
+- 我没有时间调教字体，本界面中字体是一套通用字体，与原版有较大差异。
+- 图标，为了最大程度减轻获得困难，图标全部来自于截图。
+- 本框架中大部分动画来自于animate.css，其表现上与原生有一定差异。
 
-To you, hope you enjoy this website.
+同样地，虽然这个模块遵守响应式设计，但实际在移动平台表现不佳。原因一部分来自于animate.css在移动平台的兼容性问题，另外一部分来自于很多UI组件专门为桌面平台设计，作者本人也不知道在移动平台上应该如何排版它们。
 
-[![Stargazers repo roster for @GoodManWEN/GoodManWEN.github.io](https://reporoster.com/stars/GoodManWEN/GoodManWEN.github.io)](https://github.com/GoodManWEN/GoodManWEN.github.io/stargazers)
+## 关于 Deepin
+
+作者本人与Deepin官方没有任何关系，纯粹由于兴趣爱好和宣传国产系统的目的编写，不以项目的任何形式盈利为目的。 如果您对Deepin感兴趣，请访问官方网站 [https://www.deepin.org/](https://www.deepin.org/)
+
+### 鸣谢
+
+本项目以AGPLv3协议开源，谢谢你浏览这个项目，希望你能在探索中获得乐趣。
